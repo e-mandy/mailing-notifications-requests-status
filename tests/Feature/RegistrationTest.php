@@ -1,7 +1,10 @@
 <?php
 
-describe('authentication test', function(){
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
+describe('authentication test', function(){
+    uses(RefreshDatabase::class);
     beforeEach(function(){
         $this->data = [
             'name' => "John",
@@ -10,7 +13,7 @@ describe('authentication test', function(){
             'password_confirmation' => "password"
         ];
 
-        
+
     });
 
     test('user can access the login page', function(){
@@ -30,7 +33,22 @@ describe('authentication test', function(){
 
     test('the user can sign up with success response', function(){
         $this->post('/register', $this->data)
-        ->assertStatus(201)
-        ->assertDatabaseHas('users', ['email' => "john@gmail.com"]);
+        ->assertStatus(302);
+        $this->assertDatabaseHas('users', ['email' => "john@gmail.com"]);
+    });
+
+    test('the user email is at null', function(){
+        $this->post('/register', $this->data);
+
+        $user = User::where('email', "john@gmail.com")->first();
+
+        expect($user->email_verified_at)->toBeNull();
+    });
+
+    test('the user is authenticated', function(){
+        $this->post('/register', $this->data)
+        ->assertRedirect('/home');
+
+        $this->assertAuthenticated();
     });
 });

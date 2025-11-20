@@ -13,3 +13,11 @@ Route::get('/register', function(){
 });
 
 Route::post('/register', [AuthController::class, 'register'])->name('register');
+
+Route::group([
+    'middleware' => 'auth'
+], function(){
+    Route::get('/home', function() {
+        return view('home');
+    })->name('home');
+});

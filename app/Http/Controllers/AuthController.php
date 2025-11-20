@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
@@ -15,6 +16,10 @@ class AuthController extends Controller
             'name' => $request->name,
             'password' => Hash::make($request->password)
         ]);
+
+        Auth::login($user);
+
+        return redirect('/home');
     }
 
     public function login(){
